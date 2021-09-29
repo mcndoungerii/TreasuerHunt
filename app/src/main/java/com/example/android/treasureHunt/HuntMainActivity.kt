@@ -65,6 +65,11 @@ class HuntMainActivity : AppCompatActivity() {
 
     // A PendingIntent for the Broadcast Receiver that handles geofence transitions.
     // TODO: Step 8 add in a pending intent
+    private val geofencePendingIntent: PendingIntent by lazy {
+        val intent = Intent(this,GeofenceBroadcastReceiver::class.java)
+        intent.action = ACTION_GEOFENCE_EVENT
+        PendingIntent.getBroadcast(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,6 +79,7 @@ class HuntMainActivity : AppCompatActivity() {
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
         // TODO: Step 9 instantiate the geofencing client
+        geofencingClient = LocationServices.getGeofencingClient(this)
 
         // Create channel for notifications
         createChannel(this )
@@ -308,6 +314,107 @@ class HuntMainActivity : AppCompatActivity() {
      */
     private fun addGeofenceForClue() {
         // TODO: Step 10 add in code to add the geofence
+        /**
+         * First, check if you have any active geofences for your treasure hunt.
+         * If you already do, you shouldn't add another since you only want them looking for
+         * one treasure at a time.
+         */
+        if (viewModel.geofenceIsActive()) return
+
+        /**
+         * Find the currentGeofenceIndex from the viewModel.
+         * Remove any existing geofences, call geofenceActivated on the viewModel, and return.
+         */
+        val currentGeofenceIndex = viewModel.nextGeofenceIndex()
+        if (currentGeofenceIndex >= GeofencingConstants.NUM_LANDMARKS){
+            removeGeofences()
+            viewModel.geofenceActivated()
+            return
+        }
+
+        /**
+         * Once you have the index of the geofence, and know it is valid, get the data
+         * surrounding the geofence, which includes the id, and the latitude and longitude coordinates
+         */
+
+        val currentGeofenceData = GeofencingConstants.LANDMARK_DATA[currentGeofenceIndex]
+
+        /**
+         * Build the geofence using the geofence builder and the information in currentGeofenceData.
+         * Set the expiration duration using the constant set in GeofencingConstants.
+         * Set the transition type to GEOFENCE_TRANSITION_ENTER. Finally, build the geofence.
+         */
+        val geofence = Geofence.Builder()
+            .setRequestId(currentGeofenceData.id)
+            .setCircularRegion(currentGeofenceData.latLong.latitude,
+                currentGeofenceData.latLong.longitude,GeofencingConstants.GEOFENCE_RADIUS_IN_METERS)
+            .setExpirationDuration(GeofencingConstants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+            .build()
+
+        /**
+         * Build the geofence request. Set the initial trigger to INITIAL_TRIGGER_ENTER,
+         * add the geofence you just built, and then build
+         */
+
+        val geofencingRequest = GeofencingRequest.Builder()
+            .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+            .addGeofence(geofence)
+            .build()
+
+        /**
+         * Call removeGeofences() on the geofencingClient to remove any geofences already associated with the PendingIntent.
+         */
+
+        geofencingClient.removeGeofences(geofencePendingIntent)?.run {
+            /**
+             * When removeGeofences() completes, regardless of its success or failure,
+             * add the new geofences. You can disregard the success or failure of the removal
+             * of geofences because even if the removal fails, it will not affect you adding
+             * another geofence.
+             */
+            addOnCompleteListener {
+                if (ActivityCompat.checkSelfPermission(
+                        this@HuntMainActivity,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return@addOnCompleteListener
+                }
+                geofencingClient.addGeofences(geofencingRequest,geofencePendingIntent)?.run {
+                    //If adding the geofences is successful, let the user know with a toast.
+                    addOnSuccessListener {
+                        Toast.makeText(this@HuntMainActivity,
+                            R.string.geofences_added,Toast.LENGTH_SHORT).show()
+
+                        Log.e("Add Geofence",geofence.requestId)
+                        viewModel.geofenceActivated()
+                    }
+                    /**
+                     * If adding the geofences fails, present a different toast, letting the user know
+                     * that there was an issue with adding the geofences.
+                     */
+                    addOnFailureListener {
+                        Toast.makeText(this@HuntMainActivity,
+                            R.string.geofences_not_added,Toast.LENGTH_SHORT).show()
+                        if ((it.message != null)) {
+                            Log.w(TAG, it.message)
+                        }
+                    }
+                }
+            }
+
+
+        }
+
+
     }
 
     /**
