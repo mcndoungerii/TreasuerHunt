@@ -64,19 +64,19 @@ internal object GeofencingConstants {
             "ferry_building",
             R.string.ferry_building_hint,
             R.string.ferry_building_location,
-            LatLng(37.795490, -122.394276)),
+            LatLng(-1.3268999615345196, 36.884889358307554)),
 
         LandmarkDataObject(
             "pier_39",
             R.string.pier_39_hint,
             R.string.pier_39_location,
-            LatLng(37.808674, -122.409821)),
+            LatLng(-1.3268999615345196, 36.884889358307554)),
 
         LandmarkDataObject(
            "union_square",
             R.string.union_square_hint,
             R.string.union_square_location,
-            LatLng(37.788151, -122.407570))
+            LatLng(-1.3268999615345196, 36.884889358307554))
     )
 
     val NUM_LANDMARKS = LANDMARK_DATA.size
