@@ -53,29 +53,37 @@ internal object GeofencingConstants {
      */
     val GEOFENCE_EXPIRATION_IN_MILLISECONDS: Long = TimeUnit.HOURS.toMillis(1)
 
+//    val LANDMARK_DATA = arrayOf(
+//        LandmarkDataObject(
+//            "golden_gate_bridge",
+//            R.string.golden_gate_bridge_hint,
+//            R.string.golden_gate_bridge_location,
+//            LatLng(-1.3267472526595823, 36.886749028580674)),
+//
+//        LandmarkDataObject(
+//            "ferry_building",
+//            R.string.ferry_building_hint,
+//            R.string.ferry_building_location,
+//            LatLng(-1.3268999615345196, 36.884889358307554)),
+//
+//        LandmarkDataObject(
+//            "pier_39",
+//            R.string.pier_39_hint,
+//            R.string.pier_39_location,
+//            LatLng(-1.3268999615345196, 36.884889358307554)),
+//
+//        LandmarkDataObject(
+//           "union_square",
+//            R.string.union_square_hint,
+//            R.string.union_square_location,
+//            LatLng(-1.3268999615345196, 36.884889358307554))
+//    )
+
     val LANDMARK_DATA = arrayOf(
         LandmarkDataObject(
-            "golden_gate_bridge",
-            R.string.golden_gate_bridge_hint,
-            R.string.golden_gate_bridge_location,
-            LatLng(-1.3267472526595823, 36.886749028580674)),
-
-        LandmarkDataObject(
-            "ferry_building",
-            R.string.ferry_building_hint,
-            R.string.ferry_building_location,
-            LatLng(-1.3268999615345196, 36.884889358307554)),
-
-        LandmarkDataObject(
-            "pier_39",
-            R.string.pier_39_hint,
-            R.string.pier_39_location,
-            LatLng(-1.3268999615345196, 36.884889358307554)),
-
-        LandmarkDataObject(
-           "union_square",
-            R.string.union_square_hint,
-            R.string.union_square_location,
+            "V-Club street",
+            R.string.lombard_street_hint,
+            R.string.lombard_street_location,
             LatLng(-1.3268999615345196, 36.884889358307554))
     )
 

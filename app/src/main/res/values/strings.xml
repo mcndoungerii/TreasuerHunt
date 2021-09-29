@@ -74,4 +74,9 @@
     <!-- Content Description Strings -->
     <string name="android_map_description">An Android robot with a map</string>
 
+    <!-- Geofence Hints -->
+    <string name="lombard_street_hint">Go to the most crooked street in the City</string>
+    <!-- Geofence Locations -->
+    <string name="lombard_street_location">at V-Club Street</string>
+
 </resources>
